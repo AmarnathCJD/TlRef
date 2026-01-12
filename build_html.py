@@ -548,7 +548,6 @@ a:hover {
 header {
     position: sticky;
     top: 0;
-    z-index: 100;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     background: var(--bg-glass);
