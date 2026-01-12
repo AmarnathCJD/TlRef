@@ -13,7 +13,7 @@ from pathlib import Path
 from html import escape
 
 # Current TL Schema version
-TL_VERSION = 220
+TL_VERSION = 221
 
 
 def clean_description(text: str) -> str:
