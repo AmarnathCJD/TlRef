@@ -679,7 +679,7 @@ header .search-container {
     max-height: 400px;
     overflow-y: auto;
     box-shadow: var(--shadow-hover);
-    z-index: 200;
+    z-index: 9999;
 }
 
 .search-results-dropdown.hidden {
@@ -851,7 +851,7 @@ header .search-container {
     border-radius: var(--radius);
     border: 1px solid var(--border);
     position: relative;
-    z-index: 1;
+    /* z-index removed */
 }
 
 .page-header h1 {
