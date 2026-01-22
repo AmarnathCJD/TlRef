@@ -9,6 +9,7 @@ Builds static HTML pages from the scraped JSON documentation.
 import json
 import os
 import re
+from functools import lru_cache
 from pathlib import Path
 from html import escape
 
@@ -16,6 +17,8 @@ from html import escape
 TL_VERSION = 221
 
 
+
+@lru_cache(maxsize=4096)
 def clean_description(text: str) -> str:
     """
     Clean description text by:
@@ -64,6 +67,7 @@ def load_documentation(json_path: str) -> dict:
         return json.load(f)
 
 
+@lru_cache(maxsize=4096)
 def get_output_path(name: str, category: str) -> str:
     """
     Get the output path for a constructor/method.
@@ -126,13 +130,13 @@ def linkify_type(type_str: str, root_path: str = ".", type_map: dict = None) -> 
     return make_link(type_str)
 
 
+@lru_cache(maxsize=4096)
 def to_go_name(name: str) -> str:
     """
     Convert TL name to Go method name.
     e.g., messages.sendMessage -> MessagesSendMessage
     e.g., inputMediaEmpty -> InputMediaEmpty
     """
-    import re
     # Split by dots and underscores
     parts = name.replace('.', '_').split('_')
     result = []
@@ -193,17 +197,17 @@ def get_type_example(field_type: str, include_comment: bool = False, expand_stru
     clean_type = re.sub(r'^flags\.\d+\?', '', field_type)
     is_optional = 'flags.' in field_type and '?' in field_type
     
-    # Primitives
+    # Primitives - use realistic example values
     if 'string' in clean_type:
-        return '"..."'
+        return '"Hello, World!"'
     elif clean_type in ('int', 'int32'):
-        return '0'
+        return '42'
     elif clean_type in ('long', 'int64'):
-        return 'int64(0)'
+        return 'int64(1234567890)'
     elif clean_type == 'double':
-        return '0.0'
+        return '3.14159'
     elif clean_type == 'bytes':
-        return '[]byte{}'
+        return '[]byte{0x01, 0x02, 0x03}'
     elif clean_type in ('Bool', 'true'):
         return 'true'
     
@@ -257,24 +261,25 @@ def get_type_example(field_type: str, include_comment: bool = False, expand_stru
 
 # Common struct field expansions for better examples
 STRUCT_EXPANSIONS = {
-    'InputPeerUser': 'UserID: int64(123456789)',
-    'InputPeerChat': 'ChatID: int64(123456789)',
-    'InputPeerChannel': 'ChannelID: int64(123456789), AccessHash: int64(0)',
+    'InputPeerUser': 'UserID: int64(777000)',  # Telegram service account ID
+    'InputPeerChat': 'ChatID: int64(1234567890)',
+    'InputPeerChannel': 'ChannelID: int64(1234567890), AccessHash: int64(5678901234567890)',
     'InputUserSelf': '',
-    'InputUser': 'UserID: int64(123456789), AccessHash: int64(0)',
-    'InputChannel': 'ChannelID: int64(123456789), AccessHash: int64(0)',
-    'InputPhoto': 'ID: int64(0), AccessHash: int64(0), FileReference: []byte{}',
-    'InputDocument': 'ID: int64(0), AccessHash: int64(0), FileReference: []byte{}',
-    'InputMediaPhoto': 'ID: &tg.InputPhoto{ID: int64(0), AccessHash: int64(0), FileReference: []byte{}}',
-    'InputMediaDocument': 'ID: &tg.InputDocument{ID: int64(0), AccessHash: int64(0), FileReference: []byte{}}',
-    'InputMediaUploadedPhoto': 'File: &tg.InputFile{ID: int64(0), Parts: 1, Name: "photo.jpg"}',
-    'InputMediaUploadedDocument': 'File: &tg.InputFile{ID: int64(0), Parts: 1, Name: "file.pdf"}, MimeType: "application/pdf", Attributes: []tg.DocumentAttribute{}',
-    'InputFile': 'ID: int64(0), Parts: 1, Name: "file.dat"',
-    'InputGeoPoint': 'Lat: 0.0, Long: 0.0',
-    'InputReplyToMessage': 'ReplyToMsgID: 123',
-    'MessageEntityBold': 'Offset: 0, Length: 4',
-    'ReplyKeyboardMarkup': 'Rows: []tg.KeyboardButtonRow{}',
+    'InputUser': 'UserID: int64(777000), AccessHash: int64(5678901234567890)',
+    'InputChannel': 'ChannelID: int64(1234567890), AccessHash: int64(5678901234567890)',
+    'InputPhoto': 'ID: int64(5678901234567890), AccessHash: int64(1234567890123456), FileReference: []byte{0x01, 0x02}',
+    'InputDocument': 'ID: int64(5678901234567890), AccessHash: int64(1234567890123456), FileReference: []byte{0x01, 0x02}',
+    'InputMediaPhoto': 'ID: &tg.InputPhoto{ID: int64(5678901234567890), AccessHash: int64(1234567890123456), FileReference: []byte{0x01}}',
+    'InputMediaDocument': 'ID: &tg.InputDocument{ID: int64(5678901234567890), AccessHash: int64(1234567890123456), FileReference: []byte{0x01}}',
+    'InputMediaUploadedPhoto': 'File: &tg.InputFile{ID: int64(7654321098765), Parts: 3, Name: "photo.jpg"}',
+    'InputMediaUploadedDocument': 'File: &tg.InputFile{ID: int64(7654321098765), Parts: 5, Name: "document.pdf"}, MimeType: "application/pdf", Attributes: []tg.DocumentAttribute{&tg.DocumentAttributeFilename{FileName: "document.pdf"}}',
+    'InputFile': 'ID: int64(7654321098765), Parts: 3, Name: "upload.dat"',
+    'InputGeoPoint': 'Lat: 40.7128, Long: -74.0060',  # New York coordinates
+    'InputReplyToMessage': 'ReplyToMsgID: 42',
+    'MessageEntityBold': 'Offset: 0, Length: 11',
+    'ReplyKeyboardMarkup': 'Rows: []tg.KeyboardButtonRow{{Buttons: []tg.KeyboardButton{&tg.KeyboardButton{Text: "Click Me"}}}}',
 }
+
 
 
 def get_expanded_struct(type_name: str) -> str:
@@ -546,7 +551,9 @@ a:hover {
 
 /* Header */
 header {
+    position: sticky;
     top: 0;
+    z-index: 1000;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     background: var(--bg-glass);
@@ -678,7 +685,12 @@ header .search-container {
     max-height: 400px;
     overflow-y: auto;
     box-shadow: var(--shadow-hover);
-    z-index: 9999;
+    z-index: 10000;
+}
+
+.search-wrapper {
+    position: relative;
+    z-index: 10001;
 }
 
 .search-results-dropdown.hidden {
@@ -738,9 +750,7 @@ header .search-container {
     color: #ec4899;
 }
 
-.search-wrapper {
-    position: relative;
-}
+/* search-wrapper moved above with search-results-dropdown */
 
 /* Stats */
 .stats {
@@ -1271,6 +1281,13 @@ def generate_header(title: str, root_path: str, search_data: list = None, descri
     <meta name="telegram:channel" content="@gaborern">
     
     <style>{CSS_STYLES}</style>
+    <script>
+        (function() {{
+            const saved = localStorage.getItem('theme');
+            const isDark = saved === 'dark';
+            if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
+        }})();
+    </script>
 </head>
 <body>
     <header>
@@ -1306,12 +1323,11 @@ def generate_header(title: str, root_path: str, search_data: list = None, descri
             document.querySelector('.sun-icon').style.display = isDark ? 'none' : 'block';
             document.querySelector('.moon-icon').style.display = isDark ? 'block' : 'none';
         }}
-        (function() {{
+        document.addEventListener('DOMContentLoaded', () => {{
             const saved = localStorage.getItem('theme');
             const isDark = saved === 'dark';
-            if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
-            document.addEventListener('DOMContentLoaded', () => updateToggleIcon(isDark));
-        }})();
+            updateToggleIcon(isDark);
+        }});
     </script>
 """ + (f"""
     <script>
@@ -1399,7 +1415,35 @@ def generate_footer() -> str:
     return """
     <footer>
         <div class="container">
-            <p>Made with ❤ by <a href="https://github.com/AmarnathCJD" target="_blank">AmarnathCJD</a> · Data from <a href="https://corefork.telegram.org" target="_blank">corefork.telegram.org</a></p>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px;">
+                <div>
+                    <h3 style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Gogram TLRef</h3>
+                    <p style="color: var(--text-secondary); max-width: 300px;">
+                        Comprehensive documentation for the Telegram Type Language schema, designed for the Gogram ecosystem.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 48px; flex-wrap: wrap;">
+                    <div>
+                        <h4 style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px;">Navigation</h4>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="types.html">Types</a></li>
+                            <li><a href="methods.html">Methods</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; letter-spacing: 0.5px;">Resources</h4>
+                        <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                            <li><a href="https://github.com/AmarnathCJD/gogram" target="_blank">Gogram Repository</a></li>
+                            <li><a href="https://corefork.telegram.org" target="_blank">Official Docs</a></li>
+                            <li><a href="https://github.com/AmarnathCJD/tl-ref" target="_blank">About This Project</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid var(--border); margin-top: 32px; padding-top: 24px; text-align: center; color: var(--text-secondary);">
+                <p>Made with ❤ by <a href="https://github.com/AmarnathCJD" target="_blank">AmarnathCJD</a></p>
+            </div>
         </div>
     </footer>
 </body>
@@ -1723,6 +1767,13 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
     
     go_name = to_go_name(item['name'])
     
+    # Add Obj suffix for constructors where name matches a type name
+    display_name = go_name
+    if category == 'constructor' and type_map:
+        base_name = item['name'].split('.')[-1] if '.' in item['name'] else item['name']
+        if base_name in type_map:
+            display_name = go_name + 'Obj'
+    
     html = generate_header(item['name'], root_path, search_data, description, category)
     
     # Breadcrumb
@@ -1730,9 +1781,12 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
         namespace, name = item['name'].rsplit('.', 1)
         go_namespace = to_go_name(namespace)
         go_item_name = to_go_name(name)
+        # Add Obj suffix in breadcrumb if needed
+        if category == 'constructor' and type_map and name in type_map:
+            go_item_name = go_item_name + 'Obj'
         breadcrumb = f'<a href="{root_path}/index.html">Home</a> <span>›</span> <a href="{root_path}/{category}s.html">{category.title()}s</a> <span>›</span> {go_namespace} <span>›</span> {go_item_name}'
     else:
-        breadcrumb = f'<a href="{root_path}/index.html">Home</a> <span>›</span> <a href="{root_path}/{category}s.html">{category.title()}s</a> <span>›</span> {go_name}'
+        breadcrumb = f'<a href="{root_path}/index.html">Home</a> <span>›</span> <a href="{root_path}/{category}s.html">{category.title()}s</a> <span>›</span> {display_name}'
     
     html += f"""
     <main class="container">
@@ -1744,7 +1798,7 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
         </div>
         
         <header class="page-header">
-            <h1>{escape(go_name)}</h1>
+            <h1>{escape(display_name)}</h1>
             <p class="description">{escape(description)}</p>
         </header>
         
@@ -1769,9 +1823,11 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
         <div class="code-block">{escape(item['raw_tl'])}</div>
 """
     
-    # Parameters/Fields
+    # Parameters/Fields - skip flags entries
     fields = item.get('fields', [])
-    if fields:
+    # Filter out flags-related fields
+    display_fields = [f for f in fields if f['name'] != 'flags' and f['type'] != '#']
+    if display_fields:
         html += """
         <div class="section">
             <h2>Parameters</h2>
@@ -1786,7 +1842,7 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
                     </thead>
                     <tbody>
 """
-        for field in fields:
+        for field in display_fields:
             field_desc = clean_description(field.get('description', ''))
             go_field_name = to_go_name(field['name'])
             html += f"""
@@ -1812,7 +1868,17 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
         </div>
 """
     
-    # Errors
+    # Gogram usage example - moved BEFORE errors section
+    example = generate_gogram_example(item, category, type_map)
+    highlighted_example = highlight_go_code(example)
+    html += f"""
+        <div class="example-section">
+            <h2>Gogram Example</h2>
+            <pre class="example-code">{highlighted_example}</pre>
+        </div>
+"""
+    
+    # Errors - now AFTER examples
     errors = item.get('errors', [])
     if errors:
         html += """
@@ -1860,14 +1926,7 @@ def generate_detail_page(item: dict, category: str, search_data: list, type_map:
         </div>
 """
     
-    # Gogram usage example
-    example = generate_gogram_example(item, category, type_map)
-    highlighted_example = highlight_go_code(example)
-    html += f"""
-        <div class="example-section">
-            <h2>Gogram Example</h2>
-            <pre class="example-code">{highlighted_example}</pre>
-        </div>
+    html += """
         </article>
 """
     
@@ -1907,10 +1966,17 @@ def build_html_docs(json_path: str, output_dir: str):
     search_data = []
     for item in constructors:
         go_name = to_go_name(item['name'])
+        # Add Obj suffix for constructors where name matches a type name
+        base_name = item['name'].split('.')[-1] if '.' in item['name'] else item['name']
+        display_name = go_name + 'Obj' if base_name in type_map else go_name
+        search_name = display_name.lower() + " " + item['name'].lower().replace('.', ' ')
+        # Also include non-Obj version in search for convenience
+        if base_name in type_map:
+            search_name += " " + go_name.lower()
         search_data.append({
             "name": item['name'],
-            "goDisplay": go_name,
-            "searchName": go_name.lower() + " " + item['name'].lower().replace('.', ' '),
+            "goDisplay": display_name,
+            "searchName": search_name,
             "desc": item.get('description', ''),
             "type": "constructor",
             "path": get_output_path(item['name'], 'constructor')
