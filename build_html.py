@@ -67,6 +67,58 @@ def load_documentation(json_path: str) -> dict:
         return json.load(f)
 
 
+def load_extra_documentation(extra_path: str = 'extra.json') -> dict:
+    """Load the extra.json documentation file (fallback for missing info)."""
+    try:
+        with open(extra_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {"types": [], "methods": [], "constructors": []}
+
+
+def merge_with_extra(data: dict, extra: dict) -> dict:
+    """Merge extra.json data into output.json data, filling missing information."""
+    # Create lookup dicts for extra data
+    extra_methods_map = {item['name']: item for item in extra.get('methods', [])}
+    extra_constructors_map = {item['name']: item for item in extra.get('constructors', [])}
+    
+    # Merge methods
+    for method in data.get('methods', []):
+        if method['name'] in extra_methods_map:
+            extra_method = extra_methods_map[method['name']]
+            
+            # Fill missing description
+            if not method.get('description'):
+                method['description'] = extra_method.get('description', '')
+            
+            # Merge param descriptions
+            param_map = {p['name']: p for p in method.get('fields', [])}
+            for extra_param in extra_method.get('params', []):
+                if extra_param['name'] in param_map:
+                    param = param_map[extra_param['name']]
+                    if not param.get('description'):
+                        param['description'] = extra_param.get('description', '')
+    
+    # Merge constructors
+    for constructor in data.get('constructors', []):
+        if constructor['name'] in extra_constructors_map:
+            extra_constructor = extra_constructors_map[constructor['name']]
+            
+            # Fill missing description
+            if not constructor.get('description'):
+                constructor['description'] = extra_constructor.get('description', '')
+            
+            # Merge field descriptions
+            field_map = {f['name']: f for f in constructor.get('fields', [])}
+            for extra_field in extra_constructor.get('fields', []):
+                if extra_field['name'] in field_map:
+                    field = field_map[extra_field['name']]
+                    if not field.get('description'):
+                        field['description'] = extra_field.get('description', '')
+    
+    return data
+
+
 @lru_cache(maxsize=4096)
 def get_output_path(name: str, category: str) -> str:
     """
@@ -1051,6 +1103,14 @@ def build_html_docs(json_path: str, output_dir: str):
     """Build all HTML documentation from JSON."""
     print(f"Loading documentation from: {json_path}")
     data = load_documentation(json_path)
+    
+    # Load and merge extra.json for missing information
+    print(f"Loading extra documentation from: extra.json")
+    extra = load_extra_documentation('extra.json')
+    print(f"Found {len(extra.get('methods', []))} extra methods and {len(extra.get('constructors', []))} extra constructors")
+    
+    # Merge extra data into main data
+    data = merge_with_extra(data, extra)
     
     constructors = data.get('constructors', [])
     methods = data.get('methods', [])
