@@ -215,6 +215,14 @@ def text_with_spaces(element) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def normalize_tl_type(t: str) -> str:
+    if not t:
+        return t
+    t = re.sub(r"\s*<\s*", "<", t)
+    t = re.sub(r"\s*>\s*", ">", t)
+    return t
+
+
 JUNK_SELECTORS = (
     "dev_layer_select",
     "clearfix",
@@ -343,14 +351,14 @@ def parse_page(html: str, name: str, category: str) -> TLEntry:
             for row in extract_table_rows(table, 3):
                 name_v, type_v, desc_v = row[0], row[1], row[2]
                 if name_v and type_v:
-                    entry.fields.append(FieldInfo(name=name_v, type=type_v, description=desc_v))
+                    entry.fields.append(FieldInfo(name=name_v, type=normalize_tl_type(type_v), description=desc_v))
         elif "error" in htxt or "possible error" in htxt:
             for row in extract_table_rows(table, 3):
                 code_v, type_v, desc_v = row[0], row[1], row[2]
                 if code_v and type_v:
                     entry.errors.append(ErrorInfo(code=code_v, type=type_v, description=desc_v))
 
-    entry.result_type = extract_result_type(soup)
+    entry.result_type = normalize_tl_type(extract_result_type(soup))
 
     page_text = soup.get_text(" ", strip=True)
     entry.can_be_used_by = detect_usage(page_text)

@@ -28,3 +28,8 @@ e2e_schema.json
 schema.tl
 gogram_errors.go
 errors_raw.json
+
+speed/
+
+.vercel
+.env*

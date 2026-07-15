@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E2E Schema - Gogram TL Reference</title>
+    <meta name="description" content="End-to-end encrypted (secret chat) TL schema reference.">
+    
+    <!-- Open Graph / Telegram Instant View -->
+    <meta property="og:title" content="E2E Schema - Gogram TL Reference">
+    <meta property="og:description" content="End-to-end encrypted (secret chat) TL schema reference.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Gogram TL Reference">
+    
+    <!-- Telegram Instant View hints -->
+    <meta property="article:author" content="AmarnathCJD">
+    <meta name="author" content="AmarnathCJD">
+    <meta name="telegram:channel" content="@gaborern">
+    <meta property="tg:site_verification" content="g7j8/rPFXfhyrq5q0QQV7EsYWv4=">
+    
+    <link rel="stylesheet" href="./css/common.css">
+    <script src="./js/utils.js"></script>
+    <script>
+        (function() {
+            const saved = localStorage.getItem('theme');
+            const isDark = saved === 'dark';
+            if (isDark) document.documentElement.setAttribute('data-theme', 'dark');
+        })();
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="./index.html" class="logo">Gogram <span>TLRef</span></a>
+            <div class="header-right">
+                <nav>
+                    <a href="./index.html">Home</a>
+                    <a href="./types.html">Types</a>
+                    <a href="./constructors.html">Constructors</a>
+                    <a href="./methods.html">Methods</a>
+                    <a href="./errors.html">Errors</a>
+                    <a href="./e2e.html">E2E</a>
+                </nav>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg class="moon-icon" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="search-container">
+            <div class="search-wrapper">
+                <input type="text" id="search-input" placeholder="Search methods, constructors, types..." autocomplete="off">
+                <div id="search-dropdown" class="search-results-dropdown hidden"></div>
+            </div>
+        </div>
+
+    </header>
+
+    <script>
+        const rootPath = ".";
+    </script>
+    <script src="./js/search_index.js"></script>
+    <script src="./js/search.js"></script>
+
+    <main class="container">
+        <article>
+        <div class="breadcrumb"><a href="index.html">Home</a> <span>›</span> E2E Schema</div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 8px; gap: 8px;">
+            <span style="font-size: 11px; color: var(--text-secondary); background: var(--bg-tertiary); padding: 4px 10px; border-radius: 12px;">Layers 8–216</span>
+        </div>
+
+        <header class="page-header">
+            <h1>E2E Schema</h1>
+            <p class="description">Telegram's end-to-end encrypted (secret-chat) TL schema — 90 constructors across 14 abstract types.</p>
+        </header>
+
+        <div class="badges">
+            <span class="badge badge-type">E2E</span>
+            <span class="badge badge-constructor">90 constructors</span>
+            <span class="badge badge-method">0 methods</span>
+        </div>
+
+        <div class="section">
+            <h2>How it fits in</h2>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 10px;">
+                Secret chats derive a shared <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">auth_key</code> via Diffie–Hellman. Every secret-chat message is serialised as a <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">DecryptedMessageLayer</code> wrapping a <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">DecryptedMessage</code>, then AES-256-IGE encrypted and shipped via <code style="background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;">messages.sendEncrypted</code>.
+            </p>
+            <p style="color: var(--text-secondary); line-height: 1.7; margin: 0;">
+                Each abstract type below is a tagged union; the constructor id selects the variant. Source: <a href="https://core.telegram.org/schema/end-to-end-json" target="_blank" style="color: var(--accent);">core.telegram.org/schema/end-to-end-json</a>.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Browse by abstract type</h2>
+            <div style="margin-bottom: 16px;">
+                <input type="text" id="filter-input" placeholder="Filter E2E types and constructors..." autocomplete="off">
+            </div>
+            <div class="item-list" id="items-list">
+
+                <a href="#type-DecryptedMessage" class="item" data-name="decryptedmessage decryptedmessage decryptedmessageservice decryptedmessage decryptedmessageservice decryptedmessage decryptedmessage" onclick="document.getElementById('type-DecryptedMessage-details').open = true;">
+                    <span class="item-name">DecryptedMessage</span>
+                    <span class="item-desc">6 constructors &middot; layer 8–73</span>
+                </a>
+
+                <a href="#type-DecryptedMessageAction" class="item" data-name="decryptedmessageaction decryptedmessageactionsetmessagettl decryptedmessageactionreadmessages decryptedmessageactiondeletemessages decryptedmessageactionscreenshotmessages decryptedmessageactionflushhistory decryptedmessageactionresend decryptedmessageactionnotifylayer decryptedmessageactiontyping decryptedmessageactionrequestkey decryptedmessageactionacceptkey decryptedmessageactionabortkey decryptedmessageactioncommitkey decryptedmessageactionnoop" onclick="document.getElementById('type-DecryptedMessageAction-details').open = true;">
+                    <span class="item-name">DecryptedMessageAction</span>
+                    <span class="item-desc">13 constructors &middot; layer 8–20</span>
+                </a>
+
+                <a href="#type-DecryptedMessageLayer" class="item" data-name="decryptedmessagelayer decryptedmessagelayer" onclick="document.getElementById('type-DecryptedMessageLayer-details').open = true;">
+                    <span class="item-name">DecryptedMessageLayer</span>
+                    <span class="item-desc">1 constructor &middot; layer 17–17</span>
+                </a>
+
+                <a href="#type-DecryptedMessageMedia" class="item" data-name="decryptedmessagemedia decryptedmessagemediaempty decryptedmessagemediaphoto decryptedmessagemediavideo decryptedmessagemediageopoint decryptedmessagemediacontact decryptedmessagemediadocument decryptedmessagemediaaudio decryptedmessagemediavideo decryptedmessagemediaaudio decryptedmessagemediaexternaldocument decryptedmessagemediaphoto decryptedmessagemediavideo decryptedmessagemediadocument decryptedmessagemediavenue decryptedmessagemediawebpage decryptedmessagemediadocument" onclick="document.getElementById('type-DecryptedMessageMedia-details').open = true;">
+                    <span class="item-name">DecryptedMessageMedia</span>
+                    <span class="item-desc">16 constructors &middot; layer 8–143</span>
+                </a>
+
+                <a href="#type-DocumentAttribute" class="item" data-name="documentattribute documentattributeimagesize documentattributeanimated documentattributesticker documentattributevideo documentattributeaudio documentattributefilename documentattributesticker documentattributeaudio documentattributeaudio documentattributevideo" onclick="document.getElementById('type-DocumentAttribute-details').open = true;">
+                    <span class="item-name">DocumentAttribute</span>
+                    <span class="item-desc">10 constructors &middot; layer 23–66</span>
+                </a>
+
+                <a href="#type-FileLocation" class="item" data-name="filelocation filelocationunavailable filelocation" onclick="document.getElementById('type-FileLocation-details').open = true;">
+                    <span class="item-name">FileLocation</span>
+                    <span class="item-desc">2 constructors &middot; layer 23–23</span>
+                </a>
+
+                <a href="#type-GroupCallMessage" class="item" data-name="groupcallmessage groupcallmessage" onclick="document.getElementById('type-GroupCallMessage-details').open = true;">
+                    <span class="item-name">GroupCallMessage</span>
+                    <span class="item-desc">1 constructor &middot; layer 216–216</span>
+                </a>
+
+                <a href="#type-InputStickerSet" class="item" data-name="inputstickerset inputstickersetshortname inputstickersetempty" onclick="document.getElementById('type-InputStickerSet-details').open = true;">
+                    <span class="item-name">InputStickerSet</span>
+                    <span class="item-desc">2 constructors &middot; layer 45–45</span>
+                </a>
+
+                <a href="#type-JSONObjectValue" class="item" data-name="jsonobjectvalue jsonobjectvalue" onclick="document.getElementById('type-JSONObjectValue-details').open = true;">
+                    <span class="item-name">JSONObjectValue</span>
+                    <span class="item-desc">1 constructor &middot; layer 216–216</span>
+                </a>
+
+                <a href="#type-JSONValue" class="item" data-name="jsonvalue jsonnull jsonbool jsonnumber jsonstring jsonarray jsonobject" onclick="document.getElementById('type-JSONValue-details').open = true;">
+                    <span class="item-name">JSONValue</span>
+                    <span class="item-desc">6 constructors &middot; layer 216–216</span>
+                </a>
+
+                <a href="#type-MessageEntity" class="item" data-name="messageentity messageentityunknown messageentitymention messageentityhashtag messageentitybotcommand messageentityurl messageentityemail messageentitybold messageentityitalic messageentitycode messageentitypre messageentitytexturl messageentityunderline messageentitystrike messageentityblockquote messageentityspoiler messageentitycustomemoji" onclick="document.getElementById('type-MessageEntity-details').open = true;">
+                    <span class="item-name">MessageEntity</span>
+                    <span class="item-desc">16 constructors &middot; layer 45–144</span>
+                </a>
+
+                <a href="#type-PhotoSize" class="item" data-name="photosize photosizeempty photosize photocachedsize" onclick="document.getElementById('type-PhotoSize-details').open = true;">
+                    <span class="item-name">PhotoSize</span>
+                    <span class="item-desc">3 constructors &middot; layer 23–23</span>
+                </a>
+
+                <a href="#type-SendMessageAction" class="item" data-name="sendmessageaction sendmessagetypingaction sendmessagecancelaction sendmessagerecordvideoaction sendmessageuploadvideoaction sendmessagerecordaudioaction sendmessageuploadaudioaction sendmessageuploadphotoaction sendmessageuploaddocumentaction sendmessagegeolocationaction sendmessagechoosecontactaction sendmessagerecordroundaction sendmessageuploadroundaction" onclick="document.getElementById('type-SendMessageAction-details').open = true;">
+                    <span class="item-name">SendMessageAction</span>
+                    <span class="item-desc">12 constructors &middot; layer 17–66</span>
+                </a>
+
+                <a href="#type-TextWithEntities" class="item" data-name="textwithentities textwithentities" onclick="document.getElementById('type-TextWithEntities-details').open = true;">
+                    <span class="item-name">TextWithEntities</span>
+                    <span class="item-desc">1 constructor &middot; layer 216–216</span>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="section" id="type-DecryptedMessage">
+            <h2>DecryptedMessage <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 6 constructors &middot; layer 8–73</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">The encrypted-payload counterpart to messages.Message inside a secret chat.</p>
+
+            <div id="decryptedMessage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#528568095 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">random_bytes</td><td class="error-type">bytes</td><td>Random padding so that two identical plaintexts encrypt to different ciphertexts.</td></tr><tr><td class="error-code">message</td><td class="error-type">string</td><td>Plaintext of the message.</td></tr><tr><td class="error-code">media</td><td class="error-type">DecryptedMessageMedia</td><td>Optional attachment carried in the message.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageService" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageService</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1438109059 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">random_bytes</td><td class="error-type">bytes</td><td>Random padding so that two identical plaintexts encrypt to different ciphertexts.</td></tr><tr><td class="error-code">action</td><td class="error-type">DecryptedMessageAction</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#541931640 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">ttl</td><td class="error-type">int</td><td>Self-destruct timer in seconds. 0 means the message is permanent.</td></tr><tr><td class="error-code">message</td><td class="error-type">string</td><td>Plaintext of the message.</td></tr><tr><td class="error-code">media</td><td class="error-type">DecryptedMessageMedia</td><td>Optional attachment carried in the message.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageService" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageService</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1930838368 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">action</td><td class="error-type">DecryptedMessageAction</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#917541342 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">flags</td><td class="error-type">#</td><td></td></tr><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">ttl</td><td class="error-type">int</td><td>Self-destruct timer in seconds. 0 means the message is permanent.</td></tr><tr><td class="error-code">message</td><td class="error-type">string</td><td>Plaintext of the message.</td></tr><tr><td class="error-code">media</td><td class="error-type">flags.9?DecryptedMessageMedia</td><td>Optional attachment carried in the message.</td></tr><tr><td class="error-code">entities</td><td class="error-type">flags.7?Vector&lt;MessageEntity&gt;</td><td>Inline formatting spans (bold, italic, mention, etc.).</td></tr><tr><td class="error-code">via_bot_name</td><td class="error-type">flags.11?string</td><td>Username of the inline bot that produced this message.</td></tr><tr><td class="error-code">reply_to_random_id</td><td class="error-type">flags.3?long</td><td>random_id of the message this one replies to.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1848883596 &middot; layer 73</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">flags</td><td class="error-type">#</td><td></td></tr><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">ttl</td><td class="error-type">int</td><td>Self-destruct timer in seconds. 0 means the message is permanent.</td></tr><tr><td class="error-code">message</td><td class="error-type">string</td><td>Plaintext of the message.</td></tr><tr><td class="error-code">media</td><td class="error-type">flags.9?DecryptedMessageMedia</td><td>Optional attachment carried in the message.</td></tr><tr><td class="error-code">entities</td><td class="error-type">flags.7?Vector&lt;MessageEntity&gt;</td><td>Inline formatting spans (bold, italic, mention, etc.).</td></tr><tr><td class="error-code">via_bot_name</td><td class="error-type">flags.11?string</td><td>Username of the inline bot that produced this message.</td></tr><tr><td class="error-code">reply_to_random_id</td><td class="error-type">flags.3?long</td><td>random_id of the message this one replies to.</td></tr><tr><td class="error-code">grouped_id</td><td class="error-type">flags.17?long</td><td>Album group id — messages sharing this id are rendered as one media group.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-DecryptedMessageAction">
+            <h2>DecryptedMessageAction <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 13 constructors &middot; layer 8–20</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Out-of-band actions inside a secret chat (typing notifications, key rekey, screenshot flagged, etc.).</p>
+
+            <div id="decryptedMessageActionSetMessageTTL" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionSetMessageTTL</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1586283796 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">ttl_seconds</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionReadMessages" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionReadMessages</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#206520510 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_ids</td><td class="error-type">Vector&lt;long&gt;</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionDeleteMessages" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionDeleteMessages</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1700872964 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_ids</td><td class="error-type">Vector&lt;long&gt;</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionScreenshotMessages" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionScreenshotMessages</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1967000459 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_ids</td><td class="error-type">Vector&lt;long&gt;</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionFlushHistory" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionFlushHistory</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1729750108 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="decryptedMessageActionResend" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionResend</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1360072880 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">start_seq_no</td><td class="error-type">int</td><td>First sequence number of the rekey/handshake window.</td></tr><tr><td class="error-code">end_seq_no</td><td class="error-type">int</td><td>Last sequence number of the rekey/handshake window.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionNotifyLayer" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionNotifyLayer</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-217806717 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">layer</td><td class="error-type">int</td><td>TL schema layer the encrypted message was generated against.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionTyping" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionTyping</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-860719551 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">action</td><td class="error-type">SendMessageAction</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionRequestKey" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionRequestKey</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-204906213 &middot; layer 20</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">exchange_id</td><td class="error-type">long</td><td>Identifier of the in-progress Diffie–Hellman rekey.</td></tr><tr><td class="error-code">g_a</td><td class="error-type">bytes</td><td>Sender side of the Diffie–Hellman exchange (g^a).</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionAcceptKey" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionAcceptKey</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1877046107 &middot; layer 20</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">exchange_id</td><td class="error-type">long</td><td>Identifier of the in-progress Diffie–Hellman rekey.</td></tr><tr><td class="error-code">g_b</td><td class="error-type">bytes</td><td>Receiver side of the Diffie–Hellman exchange (g^b).</td></tr><tr><td class="error-code">key_fingerprint</td><td class="error-type">long</td><td>Fingerprint of the AES-256 key used to encrypt the file payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionAbortKey" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionAbortKey</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-586814357 &middot; layer 20</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">exchange_id</td><td class="error-type">long</td><td>Identifier of the in-progress Diffie–Hellman rekey.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionCommitKey" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionCommitKey</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-332526693 &middot; layer 20</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">exchange_id</td><td class="error-type">long</td><td>Identifier of the in-progress Diffie–Hellman rekey.</td></tr><tr><td class="error-code">key_fingerprint</td><td class="error-type">long</td><td>Fingerprint of the AES-256 key used to encrypt the file payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageActionNoop" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageActionNoop</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1473258141 &middot; layer 20</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-DecryptedMessageLayer">
+            <h2>DecryptedMessageLayer <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 1 constructor &middot; layer 17–17</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Wrapper that stamps a DecryptedMessage with the schema layer both peers agreed on.</p>
+
+            <div id="decryptedMessageLayer" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageLayer</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#467867529 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_bytes</td><td class="error-type">bytes</td><td>Random padding so that two identical plaintexts encrypt to different ciphertexts.</td></tr><tr><td class="error-code">layer</td><td class="error-type">int</td><td>TL schema layer the encrypted message was generated against.</td></tr><tr><td class="error-code">in_seq_no</td><td class="error-type">int</td><td>Number of incoming messages (peer→self) the sender has acknowledged.</td></tr><tr><td class="error-code">out_seq_no</td><td class="error-type">int</td><td>Number of outgoing messages (self→peer) the sender has sent so far.</td></tr><tr><td class="error-code">message</td><td class="error-type">DecryptedMessage</td><td>Plaintext of the message.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-DecryptedMessageMedia">
+            <h2>DecryptedMessageMedia <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 16 constructors &middot; layer 8–143</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Attachments (photo, video, document, geo, contact, etc.) carried inside a DecryptedMessage.</p>
+
+            <div id="decryptedMessageMediaEmpty" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaEmpty</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#144661578 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="decryptedMessageMediaPhoto" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaPhoto</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#846826124 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaVideo" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaVideo</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1290694387 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaGeoPoint" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaGeoPoint</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#893913689 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">lat</td><td class="error-type">double</td><td></td></tr><tr><td class="error-code">long</td><td class="error-type">double</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaContact" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaContact</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1485441687 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">phone_number</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">first_name</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">last_name</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">user_id</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaDocument" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaDocument</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1332395189 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">file_name</td><td class="error-type">string</td><td>Original file name as the sender supplied it.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaAudio" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaAudio</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1619031439 &middot; layer 8</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaVideo" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaVideo</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1380598109 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaAudio" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaAudio</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1474341323 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaExternalDocument" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaExternalDocument</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-90853155 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">id</td><td class="error-type">long</td><td></td></tr><tr><td class="error-code">access_hash</td><td class="error-type">long</td><td></td></tr><tr><td class="error-code">date</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">thumb</td><td class="error-type">PhotoSize</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">dc_id</td><td class="error-type">int</td><td>Data-center where the encrypted file lives.</td></tr><tr><td class="error-code">attributes</td><td class="error-type">Vector&lt;DocumentAttribute&gt;</td><td>Type-specific metadata (filename, animated, sticker info, …).</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaPhoto" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaPhoto</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-235238024 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr><tr><td class="error-code">caption</td><td class="error-type">string</td><td>Optional caption shown under the media.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaVideo" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaVideo</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1760785394 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr><tr><td class="error-code">caption</td><td class="error-type">string</td><td>Optional caption shown under the media.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaDocument" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaDocument</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#2063502050 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr><tr><td class="error-code">attributes</td><td class="error-type">Vector&lt;DocumentAttribute&gt;</td><td>Type-specific metadata (filename, animated, sticker info, …).</td></tr><tr><td class="error-code">caption</td><td class="error-type">string</td><td>Optional caption shown under the media.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaVenue" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaVenue</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1978796689 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">lat</td><td class="error-type">double</td><td></td></tr><tr><td class="error-code">long</td><td class="error-type">double</td><td></td></tr><tr><td class="error-code">title</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">address</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">provider</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">venue_id</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaWebPage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaWebPage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-452652584 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">url</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="decryptedMessageMediaDocument" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">decryptedMessageMediaDocument</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1790809986 &middot; layer 143</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">thumb</td><td class="error-type">bytes</td><td>Inline JPEG thumbnail (always sent in clear, downscaled for preview).</td></tr><tr><td class="error-code">thumb_w</td><td class="error-type">int</td><td>Width of the inline thumbnail.</td></tr><tr><td class="error-code">thumb_h</td><td class="error-type">int</td><td>Height of the inline thumbnail.</td></tr><tr><td class="error-code">mime_type</td><td class="error-type">string</td><td>IANA media type (e.g. image/jpeg, video/mp4).</td></tr><tr><td class="error-code">size</td><td class="error-type">long</td><td>Total ciphertext size in bytes.</td></tr><tr><td class="error-code">key</td><td class="error-type">bytes</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">iv</td><td class="error-type">bytes</td><td>AES initialization vector for the encrypted payload.</td></tr><tr><td class="error-code">attributes</td><td class="error-type">Vector&lt;DocumentAttribute&gt;</td><td>Type-specific metadata (filename, animated, sticker info, …).</td></tr><tr><td class="error-code">caption</td><td class="error-type">string</td><td>Optional caption shown under the media.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-DocumentAttribute">
+            <h2>DocumentAttribute <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 10 constructors &middot; layer 23–66</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Type-specific metadata attached to an E2E document (filename, animated, sticker, audio, video, …).</p>
+
+            <div id="documentAttributeImageSize" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeImageSize</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1815593308 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeAnimated" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeAnimated</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#297109817 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="documentAttributeSticker" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeSticker</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-83208409 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="documentAttributeVideo" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeVideo</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1494273227 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeAudio" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeAudio</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#85215461 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeFilename" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeFilename</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#358154344 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">file_name</td><td class="error-type">string</td><td>Original file name as the sender supplied it.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeSticker" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeSticker</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#978674434 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">alt</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">stickerset</td><td class="error-type">InputStickerSet</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeAudio" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeAudio</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-556656416 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">title</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">performer</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeAudio" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeAudio</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1739392570 &middot; layer 46</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">flags</td><td class="error-type">#</td><td></td></tr><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">title</td><td class="error-type">flags.0?string</td><td></td></tr><tr><td class="error-code">performer</td><td class="error-type">flags.1?string</td><td></td></tr><tr><td class="error-code">waveform</td><td class="error-type">flags.2?bytes</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="documentAttributeVideo" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">documentAttributeVideo</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#250621158 &middot; layer 66</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">flags</td><td class="error-type">#</td><td></td></tr><tr><td class="error-code">duration</td><td class="error-type">int</td><td>Length in seconds.</td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-FileLocation">
+            <h2>FileLocation <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 2 constructors &middot; layer 23–23</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Pointer to an uploaded encrypted file (dc id + key + iv) needed to fetch the ciphertext.</p>
+
+            <div id="fileLocationUnavailable" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">fileLocationUnavailable</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#2086234950 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">volume_id</td><td class="error-type">long</td><td>File-location volume id (Telegram-internal storage routing).</td></tr><tr><td class="error-code">local_id</td><td class="error-type">int</td><td>File-location local id (within the volume).</td></tr><tr><td class="error-code">secret</td><td class="error-type">long</td><td>AES key half (combined with the auth key) used to decrypt the payload.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="fileLocation" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">fileLocation</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1406570614 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">dc_id</td><td class="error-type">int</td><td>Data-center where the encrypted file lives.</td></tr><tr><td class="error-code">volume_id</td><td class="error-type">long</td><td>File-location volume id (Telegram-internal storage routing).</td></tr><tr><td class="error-code">local_id</td><td class="error-type">int</td><td>File-location local id (within the volume).</td></tr><tr><td class="error-code">secret</td><td class="error-type">long</td><td>AES key half (combined with the auth key) used to decrypt the payload.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-GroupCallMessage">
+            <h2>GroupCallMessage <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 1 constructor &middot; layer 216–216</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Group-call signaling message piggybacked on the E2E channel.</p>
+
+            <div id="groupCallMessage" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">groupCallMessage</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1870862194 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">random_id</td><td class="error-type">long</td><td>Per-message client-generated nonce used to deduplicate retransmissions.</td></tr><tr><td class="error-code">message</td><td class="error-type">TextWithEntities</td><td>Plaintext of the message.</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-InputStickerSet">
+            <h2>InputStickerSet <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 2 constructors &middot; layer 45–45</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Reference to a sticker set used by an E2E sticker message.</p>
+
+            <div id="inputStickerSetShortName" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">inputStickerSetShortName</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-2044933984 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">short_name</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="inputStickerSetEmpty" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">inputStickerSetEmpty</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-4838507 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-JSONObjectValue">
+            <h2>JSONObjectValue <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 1 constructor &middot; layer 216–216</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Single name/value pair inside an E2E JSON object.</p>
+
+            <div id="jsonObjectValue" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonObjectValue</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1059185703 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">key</td><td class="error-type">string</td><td>AES-256 key for the encrypted payload.</td></tr><tr><td class="error-code">value</td><td class="error-type">JSONValue</td><td></td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-JSONValue">
+            <h2>JSONValue <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 6 constructors &middot; layer 216–216</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Tagged union representing any JSON value (null, bool, number, string, array, object) for E2E payloads.</p>
+
+            <div id="jsonNull" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonNull</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1064139624 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="jsonBool" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonBool</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-952869270 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">value</td><td class="error-type">Bool</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="jsonNumber" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonNumber</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#736157604 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">value</td><td class="error-type">double</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="jsonString" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonString</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1222740358 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">value</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="jsonArray" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonArray</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-146520221 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">value</td><td class="error-type">Vector&lt;JSONValue&gt;</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="jsonObject" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">jsonObject</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1715350371 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">value</td><td class="error-type">Vector&lt;JSONObjectValue&gt;</td><td></td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-MessageEntity">
+            <h2>MessageEntity <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 16 constructors &middot; layer 45–144</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Inline formatting span (bold, italic, mention, url, etc.) inside the plaintext of a DecryptedMessage.</p>
+
+            <div id="messageEntityUnknown" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityUnknown</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1148011883 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityMention" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityMention</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-100378723 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityHashtag" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityHashtag</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1868782349 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityBotCommand" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityBotCommand</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1827637959 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityUrl" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityUrl</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1859134776 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityEmail" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityEmail</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1692693954 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityBold" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityBold</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1117713463 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityItalic" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityItalic</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-2106619040 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityCode" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityCode</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#681706865 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityPre" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityPre</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1938967520 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">language</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityTextUrl" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityTextUrl</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1990644519 &middot; layer 45</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">url</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityUnderline" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityUnderline</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1672577397 &middot; layer 101</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityStrike" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityStrike</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1090087980 &middot; layer 101</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityBlockquote" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityBlockquote</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#34469328 &middot; layer 101</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntitySpoiler" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntitySpoiler</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#852137487 &middot; layer 144</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="messageEntityCustomEmoji" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">messageEntityCustomEmoji</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-925956616 &middot; layer 144</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">offset</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">length</td><td class="error-type">int</td><td></td></tr><tr><td class="error-code">document_id</td><td class="error-type">long</td><td></td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-PhotoSize">
+            <h2>PhotoSize <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 3 constructors &middot; layer 23–23</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">A single rendered size of a photo (thumb, mobile, full, etc.) inside an E2E photo media.</p>
+
+            <div id="photoSizeEmpty" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">photoSizeEmpty</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#236446268 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">type</td><td class="error-type">string</td><td></td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="photoSize" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">photoSize</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#2009052699 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">type</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">location</td><td class="error-type">FileLocation</td><td></td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">size</td><td class="error-type">int</td><td>Total ciphertext size in bytes.</td></tr></tbody></table></div></div>
+            </div>
+
+            <div id="photoCachedSize" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">photoCachedSize</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-374917894 &middot; layer 23</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">type</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">location</td><td class="error-type">FileLocation</td><td></td></tr><tr><td class="error-code">w</td><td class="error-type">int</td><td>Width in pixels.</td></tr><tr><td class="error-code">h</td><td class="error-type">int</td><td>Height in pixels.</td></tr><tr><td class="error-code">bytes</td><td class="error-type">bytes</td><td></td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-SendMessageAction">
+            <h2>SendMessageAction <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 12 constructors &middot; layer 17–66</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Real-time activity hint (typing, recording, choosing sticker, …) inside a secret chat.</p>
+
+            <div id="sendMessageTypingAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageTypingAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#381645902 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageCancelAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageCancelAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-44119819 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageRecordVideoAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageRecordVideoAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1584933265 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageUploadVideoAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageUploadVideoAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1845219337 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageRecordAudioAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageRecordAudioAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-718310409 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageUploadAudioAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageUploadAudioAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-424899985 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageUploadPhotoAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageUploadPhotoAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1727382502 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageUploadDocumentAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageUploadDocumentAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1884362354 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageGeoLocationAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageGeoLocationAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#393186209 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageChooseContactAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageChooseContactAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1653390447 &middot; layer 17</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageRecordRoundAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageRecordRoundAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1997373508 &middot; layer 66</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+
+            <div id="sendMessageUploadRoundAction" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">sendMessageUploadRoundAction</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#-1150187996 &middot; layer 66</span>
+                </div>
+                <div style="margin-top: 14px;"><p style="color: var(--text-secondary); font-size: 13px; font-style: italic; margin: 0;">No parameters.</p></div>
+            </div>
+        </div>
+
+        <div class="section" id="type-TextWithEntities">
+            <h2>TextWithEntities <span style="text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--text-secondary);">— 1 constructor &middot; layer 216–216</span></h2>
+<p style="color: var(--text-secondary); line-height: 1.7; margin: 0 0 16px;">Plain text plus a list of formatting MessageEntity spans, used by newer E2E messages.</p>
+
+            <div id="textWithEntities" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+                    <code style="font-size: 14px; font-weight: 600; color: var(--constructor);">textWithEntities</code>
+                    <span style="font-size: 11px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">#1964978502 &middot; layer 216</span>
+                </div>
+                <div style="margin-top: 14px;"><div class="table-container"><table><thead><tr><th>Name</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td class="error-code">text</td><td class="error-type">string</td><td></td></tr><tr><td class="error-code">entities</td><td class="error-type">Vector&lt;MessageEntity&gt;</td><td>Inline formatting spans (bold, italic, mention, etc.).</td></tr></tbody></table></div></div>
+            </div>
+        </div>
+
+        </article>
+    </main>
+
+    <script src="js/filter.js"></script>
+
+    <footer style="margin-top: 48px; border-top: 1px solid var(--border); padding: 24px 0;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="color: var(--text-secondary); font-size: 13px;">
+                &copy; 2025 Gogram TLRef. Licensed under MIT.
+            </div>
+            <div style="display: flex; gap: 24px; font-size: 13px;">
+                <a href="https://github.com/AmarnathCJD/gogram" target="_blank" style="color: var(--text-secondary);">Gogram</a>
+                <a href="https://corefork.telegram.org" target="_blank" style="color: var(--text-secondary);">Telegram Core</a>
+                <a href="https://github.com/AmarnathCJD/tl-ref" target="_blank" style="color: var(--text-secondary);">About</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

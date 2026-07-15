@@ -147,10 +147,12 @@ def linkify_type(type_str: str, root_path: str = ".", type_map: dict = None) -> 
     def make_link(type_name: str) -> str:
         # Strip flags prefix like "flags.0?"
         clean_name = re.sub(r'^flags\.\d+\?', '', type_name)
-        
+        # Defensive: some scraped types come in as "Vector < X >"; collapse whitespace inside angle brackets
+        clean_name = re.sub(r'\s*<\s*', '<', re.sub(r'\s*>\s*', '>', clean_name))
+
         if clean_name in primitives or clean_name.startswith('flags'):
             return escape(type_name)
-        
+
         # Check if it's a Vector type
         vector_match = re.match(r'Vector<(.+)>', clean_name)
         if vector_match:
@@ -236,78 +238,164 @@ INTERFACE_EXAMPLES = {
 }
 
 
-def get_type_example(field_type: str, include_comment: bool = False, expand_struct: bool = False) -> str:
+FIELD_NAME_HINTS = (
+    (re.compile(r'(^|_)(url|link)$'), '"https://example.com"'),
+    (re.compile(r'(^|_)first_?name$'), '"Alice"'),
+    (re.compile(r'(^|_)last_?name$'), '"Smith"'),
+    (re.compile(r'(^|_)username$'), '"alice"'),
+    (re.compile(r'(^|_)(title|name)$'), '"Example"'),
+    (re.compile(r'phone(_number)?$'), '"+15551234567"'),
+    (re.compile(r'email$'), '"user@example.com"'),
+    (re.compile(r'^q$|query$'), '"search term"'),
+    (re.compile(r'message$|^text$|caption$'), '"Hello!"'),
+    (re.compile(r'about$|bio$|description$'), '"Example description"'),
+    (re.compile(r'reason$'), '"spam"'),
+    (re.compile(r'password$|hash$'), '"secret"'),
+    (re.compile(r'code$'), '"12345"'),
+    (re.compile(r'lang(_code)?$|iso$'), '"en"'),
+    (re.compile(r'mime_?type$'), '"application/octet-stream"'),
+    (re.compile(r'file_?name$'), '"file.dat"'),
+    (re.compile(r'^emoticon$'), '"👍"'),
+    (re.compile(r'^currency$'), '"USD"'),
+    (re.compile(r'country(_iso2)?$'), '"US"'),
+    (re.compile(r'address$'), '"1 Main St"'),
+    (re.compile(r'venue_type$'), '"food/restaurant"'),
+    (re.compile(r'provider$'), '"stripe"'),
+    (re.compile(r'^payload$'), '"payload-data"'),
+    (re.compile(r'^slug$|invite_?hash$'), '"abc123"'),
+    (re.compile(r'^data$|extra$|payload$'), '"data"'),
+    (re.compile(r'^ip$|ip_address$'), '"127.0.0.1"'),
+    (re.compile(r'^token$|auth_?token$'), '"token"'),
+    (re.compile(r'^referrer$'), '"utm_source"'),
+    (re.compile(r'^prefix$'), '"pref"'),
+    (re.compile(r'^suffix$'), '"suf"'),
+)
+
+FIELD_NAME_INT_HINTS = (
+    (re.compile(r'(^|_)id$|_id$'), 'int64(1234567890)'),
+    (re.compile(r'access_hash$'), 'int64(5678901234567890)'),
+    (re.compile(r'^date$|_date$|_ts$|_at$|until_'), 'int(time.Now().Unix())'),
+    (re.compile(r'ttl(_seconds)?$'), '86400'),
+    (re.compile(r'period$'), '60'),
+    (re.compile(r'^limit$|^count$|_count$|max_'), '20'),
+    (re.compile(r'^offset$'), '0'),
+    (re.compile(r'width$|w$'), '640'),
+    (re.compile(r'height$|h$'), '480'),
+    (re.compile(r'duration$'), '30'),
+    (re.compile(r'amount$'), 'int64(100)'),
+    (re.compile(r'^price$|_price$'), 'int64(1000)'),
+    (re.compile(r'^parts$'), '1'),
+)
+
+
+def _hint_for_field(field_name: str, tl_type: str) -> str | None:
+    if not field_name:
+        return None
+    fn = field_name.lower()
+    if tl_type == 'string':
+        for pat, val in FIELD_NAME_HINTS:
+            if pat.search(fn):
+                return val
+        return None
+    if tl_type in ('int', 'int32', 'long', 'int64'):
+        for pat, val in FIELD_NAME_INT_HINTS:
+            if pat.search(fn):
+                if tl_type in ('int', 'int32') and 'int64(' in val:
+                    continue
+                return val
+        return None
+    return None
+
+
+def get_type_example(field_type: str, include_comment: bool = False, expand_struct: bool = False,
+                     type_map: dict = None, go_types_set: set = None, field_name: str = "") -> str:
     """
-    Get an example value for a given TL type.
-    Returns a Go code snippet representing the type.
-    
-    expand_struct: if True, show struct fields for complex types
+    Get an example Go value for a TL type.
+
+    - Vectors of a type-with-many-constructors pick a representative constructor and apply the
+      Obj suffix when the Go name collides.
+    - Vectors of a bare constructor render as []tg.T{&tg.T{}}.
+    - Field-name hints replace generic "Hello, World!" placeholders with something contextual.
     """
     import re
-    
-    # Strip flags prefix like "flags.0?"
+
     clean_type = re.sub(r'^flags\.\d+\?', '', field_type)
-    is_optional = 'flags.' in field_type and '?' in field_type
-    
-    # Primitives - use realistic example values
+    clean_type = re.sub(r'\s*<\s*', '<', re.sub(r'\s*>\s*', '>', clean_type))
+
+    def obj_suffixed(ctor_name: str) -> str:
+        go = to_go_name(ctor_name)
+        if go_types_set and go in go_types_set:
+            return go + 'Obj'
+        return go
+
+    def constructor_for_type(t: str) -> str | None:
+        if type_map and t in type_map:
+            ctors = type_map[t]
+            if ctors:
+                preferred = INTERFACE_EXAMPLES.get(t)
+                if preferred:
+                    return preferred
+                return ctors[0]['name']
+        return INTERFACE_EXAMPLES.get(t)
+
     if 'string' in clean_type:
-        return '"Hello, World!"'
-    elif clean_type in ('int', 'int32'):
-        return '42'
-    elif clean_type in ('long', 'int64'):
-        return 'int64(1234567890)'
-    elif clean_type == 'double':
+        hint = _hint_for_field(field_name, 'string')
+        return hint or '"example"'
+    if clean_type in ('int', 'int32'):
+        hint = _hint_for_field(field_name, clean_type)
+        return hint or '42'
+    if clean_type in ('long', 'int64'):
+        hint = _hint_for_field(field_name, clean_type)
+        return hint or 'int64(1234567890)'
+    if clean_type == 'double':
+        if field_name.lower().endswith(('lat', 'latitude')):
+            return '40.7128'
+        if field_name.lower().endswith(('long', 'lng', 'longitude')):
+            return '-74.0060'
         return '3.14159'
-    elif clean_type == 'bytes':
+    if clean_type == 'bytes':
         return '[]byte{0x01, 0x02, 0x03}'
-    elif clean_type in ('Bool', 'true'):
+    if clean_type in ('Bool', 'true'):
         return 'true'
-    
-    # Vector types
+
     vector_match = re.match(r'Vector<(.+)>', clean_type)
     if vector_match:
-        inner_type = vector_match.group(1)
-        inner_go_name = to_go_name(inner_type)
-        if inner_type in ('int', 'long', 'string', 'bytes', 'int32', 'int64'):
-            return f'[]{inner_type}{{}}'
-        # Check if it's an interface type
-        if inner_type in INTERFACE_EXAMPLES:
-            impl = INTERFACE_EXAMPLES[inner_type]
-            impl_go = to_go_name(impl)
+        inner = vector_match.group(1)
+        if inner in ('int', 'long', 'string', 'bytes', 'int32', 'int64'):
+            return f'[]{inner}{{}}'
+        inner_go = to_go_name(inner)
+        picked = constructor_for_type(inner)
+        if picked:
+            impl_go = obj_suffixed(picked)
             if expand_struct:
-                expanded = get_expanded_struct(impl)
+                expanded = get_expanded_struct(picked, go_types_set)
                 if expanded:
-                    return f'[]tg.{inner_go_name}{{{expanded}}}'
-            return f'[]tg.{inner_go_name}{{&tg.{impl_go}{{}}}}'
-        return f'[]tg.{inner_go_name}{{&tg.{inner_go_name}{{}}}}'
-    
-    # Complex types - check if it's an interface type
+                    inner_expr = expanded
+                else:
+                    inner_expr = f'&tg.{impl_go}{{}}'
+            else:
+                inner_expr = f'&tg.{impl_go}{{}}'
+            return f'[]tg.{inner_go}{{{inner_expr}}}'
+        return f'[]tg.{inner_go}{{&tg.{obj_suffixed(inner)}{{}}}}'
+
     if clean_type and clean_type[0].isupper():
-        go_type_name = to_go_name(clean_type)
-        
-        # Check if this is a known interface type
-        if clean_type in INTERFACE_EXAMPLES:
-            impl = INTERFACE_EXAMPLES[clean_type]
-            impl_go = to_go_name(impl)
-            
-            # Expand common structs with their fields
+        picked = constructor_for_type(clean_type)
+        if picked:
+            impl_go = obj_suffixed(picked)
             if expand_struct:
-                expanded = get_expanded_struct(impl)
+                expanded = get_expanded_struct(picked, go_types_set)
                 if expanded:
                     return expanded
-            
             if include_comment:
                 return f'&tg.{impl_go}{{}}  // or other {clean_type} implementations'
             return f'&tg.{impl_go}{{}}'
-        
-        # Not an interface type, but still try to expand if requested
+
         if expand_struct:
-            expanded = get_expanded_struct(clean_type)
+            expanded = get_expanded_struct(clean_type, go_types_set)
             if expanded:
                 return expanded
-        
-        return f'&tg.{go_type_name}{{}}'
-    
+        return f'&tg.{obj_suffixed(clean_type)}{{}}'
+
     return 'nil'
 
 
@@ -334,9 +422,11 @@ STRUCT_EXPANSIONS = {
 
 
 
-def get_expanded_struct(type_name: str) -> str:
+def get_expanded_struct(type_name: str, go_types_set: set = None) -> str:
     """Get an expanded struct example with fields filled in."""
     go_name = to_go_name(type_name)
+    if go_types_set and go_name in go_types_set:
+        go_name = go_name + 'Obj'
     if type_name in STRUCT_EXPANSIONS:
         fields = STRUCT_EXPANSIONS[type_name]
         if fields:
@@ -392,7 +482,8 @@ def generate_gogram_example(item: dict, category: str, type_map: dict = None, go
             is_optional = 'flags.' in field_type and '?' in field_type
             
             # Get example value - expand structs for positional args
-            example_val = get_type_example(field_type, include_comment=False, expand_struct=True)
+            example_val = get_type_example(field_type, include_comment=False, expand_struct=True,
+                                           type_map=type_map, go_types_set=go_types_set, field_name=field_name)
             
             if is_optional:
                 optional_params.append((go_param, example_val, field_type))
@@ -459,7 +550,8 @@ if err != nil {{
             
             go_param = to_go_name(field_name)
             is_optional = 'flags.' in field_type and '?' in field_type
-            example_val = get_type_example(field_type, include_comment=False, expand_struct=True)
+            example_val = get_type_example(field_type, include_comment=False, expand_struct=True,
+                                           type_map=type_map, go_types_set=go_types_set, field_name=field_name)
             
             if is_optional:
                 optional_params.append((go_param, example_val))
