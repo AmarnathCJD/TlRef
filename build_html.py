@@ -661,9 +661,10 @@ def generate_header(title: str, root_path: str, search_data: list = None, descri
     <meta property="og:site_name" content="Gogram TL Reference">
     
     <!-- Telegram Instant View hints -->
-    <meta property="article:author" content="AmarnathCJD">
+    <meta property="article:published_time" content="">
+    <meta property="article:author" content="https://t.me/gogrammers">
     <meta name="author" content="AmarnathCJD">
-    <meta name="telegram:channel" content="@gaborern">
+    <meta property="telegram:channel" content="@gogrammers">
     <meta property="tg:site_verification" content="g7j8/rPFXfhyrq5q0QQV7EsYWv4=">
     
     <link rel="stylesheet" href="{root_path}/css/common.css">
@@ -706,13 +707,18 @@ def generate_header(title: str, root_path: str, search_data: list = None, descri
     </script>
     <script src="{root_path}/js/search_index.js"></script>
     <script src="{root_path}/js/search.js"></script>
-""" if search_data else "")
+""" if search_data else "") + """
+    <div class="article">
+    <article class="article__content">
+"""
 
 
 
 def generate_footer() -> str:
     """Generate the common footer HTML."""
     return """
+    </article>
+    </div>
     <footer style="margin-top: 48px; border-top: 1px solid var(--border); padding: 24px 0;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div style="color: var(--text-secondary); font-size: 13px;">
